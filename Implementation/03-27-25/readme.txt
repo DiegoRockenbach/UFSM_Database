@@ -1,0 +1,1 @@
+compile main.java with "javac -d . Implementation/03-27-25/src/FileReadPerformance.java Implementation/03-27-25/src/table/*.java; java ibd.table.Main"
