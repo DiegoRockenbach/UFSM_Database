@@ -1,0 +1,40 @@
+    public ArrayList<Value> searchRange(Key lowerBound, Key upperBound) {
+
+        // If B+ tree is completely empty, return null
+        if (isEmpty()) {
+            return null;
+        }
+
+        ArrayList<Value> values = new ArrayList<>();
+
+        LeafNode ln = (getRootID() == -1) ? getFirstPage() : findLeafNode(lowerBound);
+        DictionaryPair[] dps = ln.dictionary;
+        int index = Utils.binarySearch(dps, ln.numPairs, lowerBound, this);
+
+        if (index < 0) {
+            index = ~index;
+        } else {
+            while (index > 0 && dps[index - 1].key.compareTo(lowerBound) == 0) {
+                index--;
+            }
+        }
+
+        for (int i = index; i < dps.length; i++) {
+            if (dps[i] == null) break;
+            if (dps[i].key.compareTo(upperBound) > 0) return values;
+            values.add(dps[i].value);
+        }
+
+        LeafNode currNode = (LeafNode) getNode(ln.rightSiblingID);
+        while (currNode != null) {
+            DictionaryPair[] currDps = currNode.dictionary;
+            for (DictionaryPair dp : currDps) {
+                if (dp == null) break;
+                if (dp.key.compareTo(upperBound) > 0) return values;
+                values.add(dp.value);
+            }
+            currNode = (LeafNode) getNode(currNode.rightSiblingID);
+        }
+
+        return values;
+    }
